@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Journey Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            z-index: 10;
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 100px;
+            background: linear-gradient(90deg, #e0e0e0 0%, #f0f0f0 100%);
+            border-radius: 50px;
+            position: relative;
+            margin: 30px 0;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
+            overflow: visible;
+        }
+
+        .progress-dots {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            padding: 0 50px;
+            justify-content: space-between;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background: #ccc;
+            border-radius: 50%;
+            z-index: 1;
+            transition: all 0.3s;
+        }
+
+        .dot.completed {
+            background: #4caf50;
+            transform: scale(1.5);
+        }
+
+        #face {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background: #ffeb3b;
+            border-radius: 50%;
+            top: 20px;
+            left: 20px;
+            transition: left 0.5s ease-in-out;
+            z-index: 2;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+        }
+
+        .quiz-section {
+            margin: 30px 0;
+            text-align: center;
+        }
+
+        #questionDropdown {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        #questionDropdown:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #questionDropdown:hover {
+            border-color: #667eea;
+        }
+
+        .dropdown-label {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        #selectedQuestion {
+            font-size: 1.3em;
+            color: #333;
+            margin: 20px 0;
+            min-height: 50px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            display: none;
+        }
+
+        #answerInput {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1em;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            display: none;
+        }
+
+        #answerInput:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        #submitBtn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: none;
+        }
+
+        #submitBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        #submitBtn:active {
+            transform: translateY(0);
+        }
+
+        .file-upload {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .file-label {
+            background: #4caf50;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            display: inline-block;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .file-label:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .feedback {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: bold;
+            transition: all 0.3s;
+            opacity: 0;
+        }
+
+        .feedback.show {
+            opacity: 1;
+        }
+
+        .feedback.correct {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .feedback.incorrect {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .remaining-count {
+            text-align: center;
+            margin: 10px 0;
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        .remaining-count span {
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        /* Celebration elements */
+        .balloon {
+            position: absolute;
+            width: 60px;
+            height: 70px;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            opacity: 0.9;
+            animation: float 4s ease-in-out infinite;
+            z-index: 100;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-5deg); }
+            50% { transform: translateY(-30px) rotate(5deg); }
+        }
+
+        .streamer {
+            position: absolute;
+            width: 4px;
+            height: 100px;
+            opacity: 0.8;
+            animation: fall 3s linear infinite;
+            z-index: 100;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100vh) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(360deg); }
+        }
+
+        .victory-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-align: center;
+            display: none;
+        }
+
+        .victory-message h2 {
+            color: #4caf50;
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .victory-message p {
+            font-size: 1.2em;
+            color: #666;
+        }
+
+        .play-again-btn {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+        }
+
+        .instructions {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 5px;
+            color: #1565c0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Quiz Journey Game</h1>
+        
+        <div class="file-upload">
+            <label for="fileInput" class="file-label">
+                📁 Upload Questions CSV
+            </label>
+            <input type="file" id="fileInput" accept=".csv">
+            <p style="margin-top: 10px; color: #666;">Upload a CSV with columns: question, answer</p>
+        </div>
+
+        <div class="progress-track">
+            <div class="progress-dots" id="progressDots"></div>
+            <div id="face">😊</div>
+        </div>
+
+        <div class="quiz-section" id="quizSection" style="display: none;">
+            <div class="instructions">
+                📝 Select a question from the dropdown to answer it. Correctly answered questions will be removed from the list!
+            </div>
+            
+            <label class="dropdown-label">Choose a question to answer:</label>
+            <select id="questionDropdown">
+                <option value="">-- Select a question --</option>
+            </select>
+            
+            <div class="remaining-count">
+                Questions remaining: <span id="remainingCount">0</span>
+            </div>
+            
+            <div id="selectedQuestion"></div>
+            
+            <input type="text" id="answerInput" placeholder="Type your answer here..." />
+            <button id="submitBtn">Submit Answer</button>
+            <div id="feedback" class="feedback"></div>
+        </div>
+
+        <div class="stats" id="stats" style="display: none;">
+            <div class="stat">
+                <div class="stat-value" id="correctCount">0</div>
+                <div class="stat-label">Correct Answers</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="incorrectAttempts">0</div>
+                <div class="stat-label">Incorrect Attempts</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="totalQuestions">0</div>
+                <div class="stat-label">Total Questions</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="victory-message" id="victoryMessage">
+        <h2>🎉 Congratulations! 🎉</h2>
+        <p>You've completed all questions correctly!</p>
+        <p>Your journey is complete!</p>
+        <button class="play-again-btn" onclick="resetGame()">Play Again</button>
+    </div>
+
+    <script>
+        let allQuestions = [];
+        let remainingQuestions = [];
+        let currentQuestion = null;
+        let correctAnswers = 0;
+        let incorrectAttempts = 0;
+        let totalQuestions = 0;
+
+        // Handle file upload
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    parseCSV(text);
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function parseCSV(text) {
+            const lines = text.split('\n').filter(line => line.trim());
+            allQuestions = [];
+            
+            // Skip header if present
+            const startIdx = lines[0].toLowerCase().includes('question') ? 1 : 0;
+            
+            for (let i = startIdx; i < lines.length; i++) {
+                const parts = lines[i].split(',');
+                if (parts.length >= 2) {
+                    allQuestions.push({
+                        id: i - startIdx,
+                        question: parts[0].trim(),
+                        answer: parts[1].trim().toLowerCase()
+                    });
+                }
+            }
+            
+            if (allQuestions.length > 0) {
+                initializeGame();
+            } else {
+                alert('No valid questions found in the CSV file.');
+            }
+        }
+
+        function initializeGame() {
+            // Reset counters
+            correctAnswers = 0;
+            incorrectAttempts = 0;
+            currentQuestion = null;
+            
+            // Copy all questions to remaining questions
+            remainingQuestions = [...allQuestions];
+            totalQuestions = allQuestions.length;
+            
+            // Show quiz section and stats
+            document.getElementById('quizSection').style.display = 'block';
+            document.getElementById('stats').style.display = 'flex';
+            
+            // Create progress dots
+            const dotsContainer = document.getElementById('progressDots');
+            dotsContainer.innerHTML = '';
+            const numDots = Math.min(totalQuestions, 10); // Show max 10 dots
+            for (let i = 0; i < numDots; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'dot';
+                dotsContainer.appendChild(dot);
+            }
+            
+            // Update stats
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('correctCount').textContent = '0';
+            document.getElementById('incorrectAttempts').textContent = '0';
+            document.getElementById('remainingCount').textContent = remainingQuestions.length;
+            
+            // Populate dropdown
+            updateDropdown();
+            
+            // Setup event listeners
+            document.getElementById('questionDropdown').onchange = selectQuestion;
+            document.getElementById('submitBtn').onclick = checkAnswer;
+            document.getElementById('answerInput').onkeypress = function(e) {
+                if (e.key === 'Enter' && currentQuestion) checkAnswer();
+            };
+            
+            // Reset face position
+            document.getElementById('face').style.left = '20px';
+        }
+
+        function updateDropdown() {
+            const dropdown = document.getElementById('questionDropdown');
+            dropdown.innerHTML = '<option value="">-- Select a question --</option>';
+            
+            remainingQuestions.forEach(q => {
+                const option = document.createElement('option');
+                option.value = q.id;
+                // Truncate long questions for the dropdown
+                const displayText = q.question.length > 60 
+                    ? q.question.substring(0, 57) + '...' 
+                    : q.question;
+                option.textContent = displayText;
+                dropdown.appendChild(option);
+            });
+            
+            document.getElementById('remainingCount').textContent = remainingQuestions.length;
+        }
+
+        function selectQuestion() {
+            const dropdown = document.getElementById('questionDropdown');
+            const selectedId = parseInt(dropdown.value);
+            
+            if (!isNaN(selectedId)) {
+                currentQuestion = remainingQuestions.find(q => q.id === selectedId);
+                
+                if (currentQuestion) {
+                    // Show the full question
+                    document.getElementById('selectedQuestion').textContent = currentQuestion.question;
+                    document.getElementById('selectedQuestion').style.display = 'block';
+                    
+                    // Show answer input and submit button
+                    document.getElementById('answerInput').style.display = 'block';
+                    document.getElementById('submitBtn').style.display = 'inline-block';
+                    document.getElementById('answerInput').value = '';
+                    document.getElementById('answerInput').focus();
+                    
+                    // Clear previous feedback
+                    document.getElementById('feedback').className = 'feedback';
+                }
+            } else {
+                // Hide question and input if no selection
+                document.getElementById('selectedQuestion').style.display = 'none';
+                document.getElementById('answerInput').style.display = 'none';
+                document.getElementById('submitBtn').style.display = 'none';
+                document.getElementById('feedback').className = 'feedback';
+                currentQuestion = null;
+            }
+        }
+
+        function checkAnswer() {
+            if (!currentQuestion) return;
+            
+            const userAnswer = document.getElementById('answerInput').value.trim().toLowerCase();
+            const correctAnswer = currentQuestion.answer;
+            const feedback = document.getElementById('feedback');
+            
+            if (userAnswer === correctAnswer) {
+                // Correct answer
+                feedback.textContent = '✅ Correct! Well done!';
+                feedback.className = 'feedback correct show';
+                correctAnswers++;
+                document.getElementById('correctCount').textContent = correctAnswers;
+                
+                // Remove question from remaining questions
+                remainingQuestions = remainingQuestions.filter(q => q.id !== currentQuestion.id);
+                
+                // Move face forward
+                moveFace();
+                
+                // Update progress dots
+                updateProgressDots();
+                
+                // Update dropdown
+                updateDropdown();
+                
+                // Reset selection
+                document.getElementById('questionDropdown').value = '';
+                document.getElementById('selectedQuestion').style.display = 'none';
+                document.getElementById('answerInput').style.display = 'none';
+                document.getElementById('submitBtn').style.display = 'none';
+                currentQuestion = null;
+                
+                // Check if all questions completed
+                if (remainingQuestions.length === 0) {
+                    setTimeout(celebrate, 500);
+                } else {
+                    setTimeout(() => {
+                        feedback.className = 'feedback';
+                    }, 2000);
+                }
+            } else {
+                // Incorrect answer
+                feedback.textContent = '❌ Incorrect. Try again!';
+                feedback.className = 'feedback incorrect show';
+                incorrectAttempts++;
+                document.getElementById('incorrectAttempts').textContent = incorrectAttempts;
+                document.getElementById('answerInput').value = '';
+                document.getElementById('answerInput').focus();
+            }
+        }
+
+        function moveFace() {
+            const face = document.getElementById('face');
+            const track = document.querySelector('.progress-track');
+            const trackWidth = track.offsetWidth - 80; // Account for face width and padding
+            const progress = correctAnswers / totalQuestions;
+            const newPosition = 20 + (trackWidth * progress);
+            face.style.left = `${newPosition}px`;
+        }
+
+        function updateProgressDots() {
+            const dots = document.querySelectorAll('.dot');
+            const progressIndex = Math.floor(correctAnswers / totalQuestions * dots.length);
+            for (let i = 0; i < progressIndex && i < dots.length; i++) {
+                dots[i].classList.add('completed');
+            }
+        }
+
+        function celebrate() {
+            // Show victory message
+            document.getElementById('victoryMessage').style.display = 'block';
+            
+            // Create balloons
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b', '#6ab04c', '#130f40'];
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const balloon = document.createElement('div');
+                    balloon.className = 'balloon';
+                    balloon.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    balloon.style.left = Math.random() * 100 + '%';
+                    balloon.style.top = Math.random() * 100 + '%';
+                    balloon.style.animationDelay = Math.random() * 2 + 's';
+                    document.body.appendChild(balloon);
+                }, i * 100);
+            }
+            
+            // Create streamers
+            for (let i = 0; i < 30; i++) {
+                setTimeout(() => {
+                    const streamer = document.createElement('div');
+                    streamer.className = 'streamer';
+                    streamer.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    streamer.style.left = Math.random() * 100 + '%';
+                    streamer.style.animationDelay = Math.random() * 3 + 's';
+                    streamer.style.animationDuration = (3 + Math.random() * 2) + 's';
+                    document.body.appendChild(streamer);
+                }, i * 50);
+            }
+            
+            // Change face to celebration
+            document.getElementById('face').textContent = '🎉';
+        }
+
+        function resetGame() {
+            // Remove celebration elements
+            document.querySelectorAll('.balloon, .streamer').forEach(el => el.remove());
+            
+            // Hide victory message
+            document.getElementById('victoryMessage').style.display = 'none';
+            
+            // Reset face
+            document.getElementById('face').textContent = '😊';
+            
+            // Reset dots
+            document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('completed'));
+            
+            // Reinitialize game
+            initializeGame();
+        }
+
+        // Sample questions for testing (remove this when using your own CSV)
+        const sampleQuestions = [
+            { question: "What is 2 + 2?", answer: "4" },
+            { question: "What is the capital of France?", answer: "paris" },
+            { question: "What color is the sky?", answer: "blue" },
+            { question: "How many days in a week?", answer: "7" },
+            { question: "What is 5 x 3?", answer: "15" },
+            { question: "What is the largest planet in our solar system?", answer: "jupiter" },
+            { question: "How many continents are there?", answer: "7" },
+            { question: "What is the chemical symbol for water?", answer: "h2o" },
+            { question: "In what year did World War II end?", answer: "1945" },
+            { question: "What is the smallest prime number?", answer: "2" }
+        ];
+
+        // Load sample questions for demo (remove this when using your own CSV)
+        window.addEventListener('load', function() {
+            allQuestions = sampleQuestions.map((q, i) => ({...q, id: i}));
+            initializeGame();
+        });
+    </script>
+</body>
+</html>
