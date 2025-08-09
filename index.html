@@ -2,13 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Quiz Journey Game</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
@@ -18,7 +19,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 20px;
+            padding: 10px;
             position: relative;
             overflow: hidden;
         }
@@ -26,7 +27,7 @@
         .container {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 20px;
-            padding: 30px;
+            padding: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             max-width: 800px;
             width: 100%;
@@ -37,18 +38,18 @@
         h1 {
             text-align: center;
             color: #333;
-            margin-bottom: 30px;
-            font-size: 2em;
+            margin-bottom: 20px;
+            font-size: 1.8em;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
 
         .progress-track {
             width: 100%;
-            height: 100px;
+            height: 80px;
             background: linear-gradient(90deg, #e0e0e0 0%, #f0f0f0 100%);
-            border-radius: 50px;
+            border-radius: 40px;
             position: relative;
-            margin: 30px 0;
+            margin: 20px 0;
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.1);
             overflow: visible;
         }
@@ -59,13 +60,13 @@
             height: 100%;
             display: flex;
             align-items: center;
-            padding: 0 50px;
+            padding: 0 40px;
             justify-content: space-between;
         }
 
         .dot {
-            width: 12px;
-            height: 12px;
+            width: 10px;
+            height: 10px;
             background: #ccc;
             border-radius: 50%;
             z-index: 1;
@@ -79,33 +80,43 @@
 
         #face {
             position: absolute;
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: #ffeb3b;
             border-radius: 50%;
-            top: 20px;
-            left: 20px;
+            top: 15px;
+            left: 15px;
             transition: left 0.5s ease-in-out;
             z-index: 2;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 30px;
+            font-size: 25px;
+            overflow: hidden;
         }
 
+        #face img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+
+
         .quiz-section {
-            margin: 30px 0;
+            margin: 20px 0;
             text-align: center;
         }
 
         #questionDropdown {
             width: 100%;
-            padding: 15px;
-            font-size: 1.1em;
+            padding: 12px;
+            font-size: 1em;
             border: 2px solid #ddd;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             background: white;
             cursor: pointer;
             transition: all 0.3s;
@@ -117,23 +128,20 @@
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
         }
 
-        #questionDropdown:hover {
-            border-color: #667eea;
-        }
-
         .dropdown-label {
             font-weight: bold;
             color: #555;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             display: block;
+            font-size: 0.95em;
         }
 
         #selectedQuestion {
-            font-size: 1.3em;
+            font-size: 1.1em;
             color: #333;
-            margin: 20px 0;
-            min-height: 50px;
-            padding: 20px;
+            margin: 15px 0;
+            min-height: 40px;
+            padding: 15px;
             background: #f8f9fa;
             border-radius: 10px;
             border: 2px solid #e9ecef;
@@ -142,11 +150,11 @@
 
         #answerInput {
             width: 100%;
-            padding: 15px;
-            font-size: 1.1em;
+            padding: 12px;
+            font-size: 1em;
             border: 2px solid #ddd;
             border-radius: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             transition: all 0.3s;
             display: none;
         }
@@ -161,13 +169,14 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
+            padding: 12px 35px;
+            font-size: 1em;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
             display: none;
+            touch-action: manipulation;
         }
 
         #submitBtn:hover {
@@ -180,7 +189,7 @@
         }
 
         .file-upload {
-            margin: 20px 0;
+            margin: 15px 0;
             text-align: center;
         }
 
@@ -191,12 +200,13 @@
         .file-label {
             background: #4caf50;
             color: white;
-            padding: 12px 30px;
+            padding: 10px 25px;
             border-radius: 50px;
             cursor: pointer;
             display: inline-block;
             transition: all 0.3s;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-size: 0.95em;
         }
 
         .file-label:hover {
@@ -205,12 +215,13 @@
         }
 
         .feedback {
-            margin-top: 20px;
-            padding: 15px;
+            margin-top: 15px;
+            padding: 12px;
             border-radius: 10px;
             font-weight: bold;
             transition: all 0.3s;
             opacity: 0;
+            font-size: 0.95em;
         }
 
         .feedback.show {
@@ -232,18 +243,21 @@
         .stats {
             display: flex;
             justify-content: space-around;
-            margin: 20px 0;
-            padding: 20px;
+            margin: 15px 0;
+            padding: 15px;
             background: #f8f9fa;
             border-radius: 10px;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .stat {
             text-align: center;
+            min-width: 80px;
         }
 
         .stat-value {
-            font-size: 2em;
+            font-size: 1.8em;
             font-weight: bold;
             color: #667eea;
         }
@@ -251,12 +265,13 @@
         .stat-label {
             color: #666;
             margin-top: 5px;
+            font-size: 0.85em;
         }
 
         .remaining-count {
             text-align: center;
             margin: 10px 0;
-            font-size: 1.1em;
+            font-size: 1em;
             color: #666;
         }
 
@@ -265,11 +280,22 @@
             color: #667eea;
         }
 
+        .instructions {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 5px;
+            color: #1565c0;
+            font-size: 0.9em;
+            text-align: left;
+        }
+
         /* Celebration elements */
         .balloon {
             position: absolute;
-            width: 60px;
-            height: 70px;
+            width: 50px;
+            height: 60px;
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
             opacity: 0.9;
             animation: float 4s ease-in-out infinite;
@@ -284,7 +310,7 @@
         .streamer {
             position: absolute;
             width: 4px;
-            height: 100px;
+            height: 80px;
             opacity: 0.8;
             animation: fall 3s linear infinite;
             z-index: 100;
@@ -301,22 +327,24 @@
             left: 50%;
             transform: translate(-50%, -50%);
             background: white;
-            padding: 40px;
+            padding: 30px;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
             z-index: 1000;
             text-align: center;
             display: none;
+            width: 90%;
+            max-width: 400px;
         }
 
         .victory-message h2 {
             color: #4caf50;
-            font-size: 3em;
-            margin-bottom: 20px;
+            font-size: 2.5em;
+            margin-bottom: 15px;
         }
 
         .victory-message p {
-            font-size: 1.2em;
+            font-size: 1.1em;
             color: #666;
         }
 
@@ -325,19 +353,82 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            padding: 15px 40px;
-            font-size: 1.1em;
+            padding: 12px 35px;
+            font-size: 1em;
             border-radius: 50px;
             cursor: pointer;
         }
 
-        .instructions {
-            background: #e3f2fd;
-            border-left: 4px solid #2196f3;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 5px;
-            color: #1565c0;
+        /* Mobile-specific styles */
+        @media (max-width: 600px) {
+            body {
+                padding: 5px;
+            }
+
+            .container {
+                padding: 15px;
+                border-radius: 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+
+            .progress-track {
+                height: 60px;
+                border-radius: 30px;
+            }
+
+            #face {
+                width: 40px;
+                height: 40px;
+                top: 10px;
+                left: 10px;
+                font-size: 20px;
+            }
+
+            .progress-dots {
+                padding: 0 30px;
+            }
+
+            .dot {
+                width: 8px;
+                height: 8px;
+            }
+
+            .stat-value {
+                font-size: 1.5em;
+            }
+
+            .stat-label {
+                font-size: 0.8em;
+            }
+
+            #selectedQuestion {
+                font-size: 1em;
+                padding: 12px;
+            }
+
+            .victory-message h2 {
+                font-size: 2em;
+            }
+
+            .victory-message {
+                padding: 25px;
+            }
+
+            .instructions {
+                font-size: 0.85em;
+                padding: 10px;
+            }
+        }
+
+        /* Prevent zoom on input focus for iOS */
+        @media (max-width: 600px) {
+            input, select, textarea {
+                font-size: 16px !important;
+            }
         }
     </style>
 </head>
@@ -350,8 +441,10 @@
                 📁 Upload Questions CSV
             </label>
             <input type="file" id="fileInput" accept=".csv">
-            <p style="margin-top: 10px; color: #666;">Upload a CSV with columns: question, answer</p>
+            <p style="margin-top: 10px; color: #666; font-size: 0.9em;">Upload a CSV with columns: question, answer</p>
         </div>
+
+
 
         <div class="progress-track">
             <div class="progress-dots" id="progressDots"></div>
@@ -374,7 +467,7 @@
             
             <div id="selectedQuestion"></div>
             
-            <input type="text" id="answerInput" placeholder="Type your answer here..." />
+            <input type="text" id="answerInput" placeholder="Type your answer here..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" />
             <button id="submitBtn">Submit Answer</button>
             <div id="feedback" class="feedback"></div>
         </div>
@@ -382,15 +475,15 @@
         <div class="stats" id="stats" style="display: none;">
             <div class="stat">
                 <div class="stat-value" id="correctCount">0</div>
-                <div class="stat-label">Correct Answers</div>
+                <div class="stat-label">Correct</div>
             </div>
             <div class="stat">
                 <div class="stat-value" id="incorrectAttempts">0</div>
-                <div class="stat-label">Incorrect Attempts</div>
+                <div class="stat-label">Incorrect</div>
             </div>
             <div class="stat">
                 <div class="stat-value" id="totalQuestions">0</div>
-                <div class="stat-label">Total Questions</div>
+                <div class="stat-label">Total</div>
             </div>
         </div>
     </div>
@@ -489,7 +582,7 @@
             };
             
             // Reset face position
-            document.getElementById('face').style.left = '20px';
+            document.getElementById('face').style.left = '15px';
         }
 
         function updateDropdown() {
@@ -500,8 +593,8 @@
                 const option = document.createElement('option');
                 option.value = q.id;
                 // Truncate long questions for the dropdown
-                const displayText = q.question.length > 60 
-                    ? q.question.substring(0, 57) + '...' 
+                const displayText = q.question.length > 50 
+                    ? q.question.substring(0, 47) + '...' 
                     : q.question;
                 option.textContent = displayText;
                 dropdown.appendChild(option);
@@ -596,9 +689,10 @@
         function moveFace() {
             const face = document.getElementById('face');
             const track = document.querySelector('.progress-track');
-            const trackWidth = track.offsetWidth - 80; // Account for face width and padding
+            const faceWidth = face.offsetWidth;
+            const trackWidth = track.offsetWidth - faceWidth - 30; // Account for face width and padding
             const progress = correctAnswers / totalQuestions;
-            const newPosition = 20 + (trackWidth * progress);
+            const newPosition = 15 + (trackWidth * progress);
             face.style.left = `${newPosition}px`;
         }
 
@@ -616,7 +710,7 @@
             
             // Create balloons
             const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#f9ca24', '#f0932b', '#eb4d4b', '#6ab04c', '#130f40'];
-            for (let i = 0; i < 15; i++) {
+            for (let i = 0; i < 12; i++) {
                 setTimeout(() => {
                     const balloon = document.createElement('div');
                     balloon.className = 'balloon';
@@ -629,7 +723,7 @@
             }
             
             // Create streamers
-            for (let i = 0; i < 30; i++) {
+            for (let i = 0; i < 25; i++) {
                 setTimeout(() => {
                     const streamer = document.createElement('div');
                     streamer.className = 'streamer';
@@ -642,7 +736,7 @@
             }
             
             // Change face to celebration
-            document.getElementById('face').textContent = '🎉';
+            document.getElementById('face').innerHTML = '🎉';
         }
 
         function resetGame() {
@@ -653,7 +747,7 @@
             document.getElementById('victoryMessage').style.display = 'none';
             
             // Reset face
-            document.getElementById('face').textContent = '😊';
+            document.getElementById('face').innerHTML = '😊';
             
             // Reset dots
             document.querySelectorAll('.dot').forEach(dot => dot.classList.remove('completed'));
@@ -681,6 +775,16 @@
             allQuestions = sampleQuestions.map((q, i) => ({...q, id: i}));
             initializeGame();
         });
+
+        // Prevent double-tap zoom on iOS
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function (event) {
+            const now = (new Date()).getTime();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
     </script>
 </body>
 </html>
